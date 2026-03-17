@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agentic AI E-Commerce Analytics System</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--accent:#00E5A0;--accent2:#6C63FF;--accent3:#FF6B6B;--accent4:#FFB347;--dark:#0A0D12;--card:#111620;--card2:#161C28;--border:rgba(255,255,255,0.07);--text:#E8ECF4;--muted:#7A8499;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif}
+body{background:var(--dark);color:var(--text);font-family:var(--sans);line-height:1.6;overflow-x:hidden}
+.hero{position:relative;padding:64px 40px 48px;overflow:hidden;border-bottom:1px solid var(--border)}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,160,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.04) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.hero-glow{position:absolute;top:-80px;right:-80px;width:400px;height:400px;background:radial-gradient(circle,rgba(108,99,255,0.15) 0%,transparent 70%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(0,229,160,0.1);border:1px solid rgba(0,229,160,0.25);color:#00E5A0;font-family:monospace;font-size:11px;padding:4px 12px;border-radius:20px;margin-bottom:20px}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:#00E5A0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+h1{font-size:clamp(28px,4vw,48px);font-weight:600;letter-spacing:-1px;line-height:1.15;margin-bottom:16px}
+h1 span{background:linear-gradient(135deg,#00E5A0,#6C63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-sub{color:#7A8499;font-size:16px;max-width:580px;margin-bottom:32px}
+.hero-tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:#161C28;border:1px solid rgba(255,255,255,0.07);color:#7A8499;font-family:monospace;font-size:11px;padding:4px 10px;border-radius:4px}
+.nav{display:flex;gap:2px;padding:0 40px;background:#111620;border-bottom:1px solid rgba(255,255,255,0.07);overflow-x:auto}
+.nav-btn{font-size:13px;font-weight:500;color:#7A8499;background:none;border:none;padding:14px 16px;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:.2s}
+.nav-btn.active{color:#00E5A0;border-bottom-color:#00E5A0}
+.nav-btn:hover:not(.active){color:#E8ECF4}
+.content{padding:40px}
+.section{display:none}
+.section.active{display:block}
+.card{background:#111620;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:24px}
+.card2{background:#161C28;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px}
+.grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+.sec-label{font-family:monospace;font-size:10px;color:#00E5A0;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px}
+.sec-title{font-size:22px;font-weight:600;margin-bottom:8px}
+.sec-desc{color:#7A8499;font-size:14px;margin-bottom:28px}
+.agent-card{background:#111620;border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px;position:relative;overflow:hidden;cursor:pointer;transition:.25s}
+.agent-card:hover{border-color:rgba(255,255,255,0.15);transform:translateY(-2px)}
+.agent-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.agent-planner::before{background:linear-gradient(90deg,#6C63FF,transparent)}
+.agent-data::before{background:linear-gradient(90deg,#00E5A0,transparent)}
+.agent-insight::before{background:linear-gradient(90deg,#FFB347,transparent)}
+.agent-rec::before{background:linear-gradient(90deg,#FF6B6B,transparent)}
+.agent-memory::before{background:linear-gradient(90deg,#A78BFA,transparent)}
+.agent-api::before{background:linear-gradient(90deg,#38BDF8,transparent)}
+.agent-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:12px}
+.agent-name{font-weight:600;font-size:15px;margin-bottom:4px}
+.agent-desc{font-size:13px;color:#7A8499;margin-bottom:12px}
+.pill{font-size:10px;font-family:monospace;background:rgba(255,255,255,0.06);padding:3px 8px;border-radius:20px;color:#7A8499;display:inline-block;margin:2px}
+.flow{display:flex;flex-direction:column;gap:0;align-items:center;max-width:560px;margin:0 auto}
+.flow-step{display:flex;align-items:center;gap:16px;width:100%;background:#111620;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px 20px}
+.flow-num{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:12px;font-weight:700;flex-shrink:0}
+.flow-title{font-weight:500;font-size:14px}
+.flow-sub{font-size:12px;color:#7A8499}
+.flow-arrow{height:24px;display:flex;align-items:center;justify-content:center;color:#7A8499;font-size:18px;width:100%;text-align:center}
+.flow-decision{background:#161C28;border:1px dashed rgba(255,229,0,0.3);border-radius:10px;padding:12px 20px;text-align:center;font-size:13px;color:#FFB347;font-family:monospace;width:100%}
+.tech-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.07)}
+.tech-row:last-child{border:none}
+.tech-layer{font-family:monospace;font-size:11px;color:#7A8499;min-width:110px}
+.tech-tag{font-size:12px;font-family:monospace;padding:4px 10px;border-radius:6px;font-weight:700;display:inline-block;margin:2px}
+.t-ai{background:rgba(108,99,255,0.15);color:#A78BFA;border:1px solid rgba(108,99,255,0.25)}
+.t-back{background:rgba(0,229,160,0.1);color:#00E5A0;border:1px solid rgba(0,229,160,0.2)}
+.t-data{background:rgba(56,189,248,0.1);color:#38BDF8;border:1px solid rgba(56,189,248,0.2)}
+.t-viz{background:rgba(255,107,107,0.1);color:#FF6B6B;border:1px solid rgba(255,107,107,0.2)}
+.t-db{background:rgba(251,191,36,0.1);color:#FBbF24;border:1px solid rgba(251,191,36,0.2)}
+.t-deploy{background:rgba(255,179,71,0.1);color:#FFB347;border:1px solid rgba(255,179,71,0.2)}
+.metric{text-align:center;padding:20px}
+.metric-val{font-size:32px;font-weight:600;font-family:monospace;background:linear-gradient(135deg,#00E5A0,#6C63FF);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.metric-label{font-size:12px;color:#7A8499;margin-top:4px}
+.io-block{background:#161C28;border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:16px}
+.io-label{font-family:monospace;font-size:10px;letter-spacing:1.5px;margin-bottom:12px}
+.io-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.07);font-size:13px}
+.io-row:last-child{border:none}
+.io-key{color:#7A8499;min-width:100px}
+.io-val{font-family:monospace;font-size:12px}
+.feat{display:flex;gap:14px;padding:16px;background:#161C28;border:1px solid rgba(255,255,255,0.07);border-radius:10px;transition:.2s;margin-bottom:10px}
+.feat:hover{border-color:rgba(255,255,255,0.12)}
+.feat-icon{font-size:20px;flex-shrink:0;margin-top:2px}
+.feat-title{font-weight:500;font-size:14px;margin-bottom:4px}
+.feat-desc{font-size:13px;color:#7A8499}
+.qa-item{border:1px solid rgba(255,255,255,0.07);border-radius:10px;overflow:hidden;margin-bottom:10px}
+.qa-q{padding:14px 18px;cursor:pointer;font-size:14px;font-weight:500;display:flex;justify-content:space-between;align-items:center;background:#111620}
+.qa-q:hover{background:#161C28}
+.qa-q .chevron{transition:.3s;color:#7A8499;font-size:12px}
+.qa-q.open .chevron{transform:rotate(180deg);color:#00E5A0}
+.qa-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
+.qa-a.open{max-height:300px}
+.qa-a-inner{padding:14px 18px;font-size:13px;color:#7A8499;background:#161C28;border-top:1px solid rgba(255,255,255,0.07);line-height:1.7}
+.resume-box{background:linear-gradient(135deg,rgba(108,99,255,0.12),rgba(0,229,160,0.08));border:1px solid rgba(108,99,255,0.25);border-radius:12px;padding:28px;position:relative;margin-top:20px}
+.resume-box::before{content:'RESUME.txt';position:absolute;top:-10px;left:20px;background:#111620;font-family:monospace;font-size:10px;color:#7A8499;padding:0 8px;letter-spacing:1px}
+.resume-text{font-size:15px;line-height:1.8;font-style:italic}
+.deploy-step{display:flex;gap:16px;margin-bottom:20px}
+.deploy-num{width:28px;height:28px;border-radius:50%;background:rgba(0,229,160,0.15);border:1px solid rgba(0,229,160,0.3);display:flex;align-items:center;justify-content:center;font-family:monospace;font-size:11px;color:#00E5A0;flex-shrink:0;margin-top:2px}
+.deploy-title{font-weight:500;font-size:14px;margin-bottom:3px}
+.deploy-desc{font-size:13px;color:#7A8499}
+.code-block{background:#0D1117;border:1px solid rgba(255,255,255,0.07);border-radius:8px;padding:16px;font-family:monospace;font-size:12px;color:#A3C4E8;line-height:1.9;margin-top:10px;overflow-x:auto;white-space:pre}
+.struct-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:#161C28;border:1px solid rgba(255,255,255,0.07);border-radius:8px;margin-bottom:6px;font-family:monospace;font-size:12px}
+.tip-box{background:rgba(0,229,160,0.06);border:1px solid rgba(0,229,160,0.2);border-radius:10px;padding:16px 20px;display:flex;gap:12px;margin-top:20px}
+.tip-text{font-size:13px;color:#7A8499;line-height:1.7}
+.tip-text strong{color:#00E5A0}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+</style>
+</head>
+<body>
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div style="position:relative">
+    <div class="badge"><span class="badge-dot"></span> Agentic AI System &middot; v1.0</div>
+    <h1>E-Commerce Sales<br><span>Intelligence Engine</span></h1>
+    <p class="hero-sub">A multi-agent AI system that autonomously analyzes sales data, detects business problems, generates insights, and recommends strategic actions.</p>
+    <div class="hero-tags">
+      <span class="tag">LangGraph</span><span class="tag">FastAPI</span><span class="tag">Multi-Agent</span>
+      <span class="tag">Pandas</span><span class="tag">Plotly</span><span class="tag">FAISS</span><span class="tag">Docker</span>
+    </div>
+  </div>
+</div>
+
+<div class="nav">
+  <button class="nav-btn active" onclick="showTab('overview',this)">Overview</button>
+  <button class="nav-btn" onclick="showTab('agents',this)">Agents</button>
+  <button class="nav-btn" onclick="showTab('workflow',this)">Workflow</button>
+  <button class="nav-btn" onclick="showTab('techstack',this)">Tech Stack</button>
+  <button class="nav-btn" onclick="showTab('usecase',this)">Use Case</button>
+  <button class="nav-btn" onclick="showTab('features',this)">Features</button>
+  <button class="nav-btn" onclick="showTab('deployment',this)">Deployment</button>
+  <button class="nav-btn" onclick="showTab('structure',this)">Structure</button>
+  <button class="nav-btn" onclick="showTab('interview',this)">Interview Prep</button>
+</div>
+
+<div id="tab-overview" class="section content active">
+  <div class="sec-label">01 &middot; Project Overview</div>
+  <div class="sec-title">What This System Does</div>
+  <div class="sec-desc">An end-to-end agentic AI platform that transforms raw e-commerce CSV data into actionable business intelligence.</div>
+  <div class="grid-4" style="margin-bottom:28px">
+    <div class="card" style="padding:0"><div class="metric"><div class="metric-val">6</div><div class="metric-label">AI Agents</div></div></div>
+    <div class="card" style="padding:0"><div class="metric"><div class="metric-val">3</div><div class="metric-label">API Endpoints</div></div></div>
+    <div class="card" style="padding:0"><div class="metric"><div class="metric-val">&#8734;</div><div class="metric-label">Memory Layer</div></div></div>
+    <div class="card" style="padding:0"><div class="metric"><div class="metric-val">NL</div><div class="metric-label">Query Support</div></div></div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div style="font-family:monospace;font-size:10px;color:#FF6B6B;letter-spacing:2px;margin-bottom:14px">PROBLEM STATEMENT</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:12px"><span style="color:#FF6B6B;font-size:18px">&#10005;</span><div><div style="font-size:14px;font-weight:500">Identifying sales drops</div><div style="font-size:12px;color:#7A8499">No real-time anomaly detection</div></div></div>
+        <div style="display:flex;gap:12px"><span style="color:#FF6B6B;font-size:18px">&#10005;</span><div><div style="font-size:14px;font-weight:500">Customer behavior gaps</div><div style="font-size:12px;color:#7A8499">Churn patterns remain invisible</div></div></div>
+        <div style="display:flex;gap:12px"><span style="color:#FF6B6B;font-size:18px">&#10005;</span><div><div style="font-size:14px;font-weight:500">Slow data-driven decisions</div><div style="font-size:12px;color:#7A8499">Manual reporting delays strategy</div></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-family:monospace;font-size:10px;color:#00E5A0;letter-spacing:2px;margin-bottom:14px">SOLUTION DELIVERED</div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:12px"><span style="color:#00E5A0;font-size:18px">&#10003;</span><div><div style="font-size:14px;font-weight:500">Autonomous analysis pipeline</div><div style="font-size:12px;color:#7A8499">Planner + Data agents detect patterns instantly</div></div></div>
+        <div style="display:flex;gap:12px"><span style="color:#00E5A0;font-size:18px">&#10003;</span><div><div style="font-size:14px;font-weight:500">LLM-powered insight generation</div><div style="font-size:12px;color:#7A8499">Plain-language explanations of every finding</div></div></div>
+        <div style="display:flex;gap:12px"><span style="color:#00E5A0;font-size:18px">&#10003;</span><div><div style="font-size:14px;font-weight:500">Automated recommendations</div><div style="font-size:12px;color:#7A8499">Business actions generated, not just charts</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="resume-box">
+    <p class="resume-text">"Developed an Agentic AI-powered E-commerce Analytics System using LangGraph and FastAPI that autonomously analyzes sales data, generates insights, and recommends business strategies using multi-agent collaboration."</p>
+  </div>
+</div>
+
+<div id="tab-agents" class="section content">
+  <div class="sec-label">02 &middot; Agent Architecture</div>
+  <div class="sec-title">6 Specialized Agents</div>
+  <div class="sec-desc">Each agent is a focused module with a single responsibility.</div>
+  <div class="grid-2">
+    <div class="agent-card agent-planner"><div class="agent-icon" style="background:rgba(108,99,255,0.15)">&#128506;</div><div class="agent-name">Planner Agent</div><div class="agent-desc">Receives user query and dataset, decomposes the task into an ordered execution plan.</div><div><span class="pill">Task decomposition</span><span class="pill">Step ordering</span><span class="pill">Agent routing</span></div></div>
+    <div class="agent-card agent-data"><div class="agent-icon" style="background:rgba(0,229,160,0.12)">&#9881;</div><div class="agent-name">Data Agent</div><div class="agent-desc">Executes EDA, cleans missing values, handles outliers, runs aggregations.</div><div><span class="pill">Pandas EDA</span><span class="pill">Outlier detection</span><span class="pill">Aggregation</span></div></div>
+    <div class="agent-card agent-insight"><div class="agent-icon" style="background:rgba(255,179,71,0.12)">&#128161;</div><div class="agent-name">Insight Agent</div><div class="agent-desc">Uses LLM to convert raw analysis into human-readable explanations with reflection loop.</div><div><span class="pill">LLM reasoning</span><span class="pill">Pattern narration</span><span class="pill">Self-validation</span></div></div>
+    <div class="agent-card agent-rec"><div class="agent-icon" style="background:rgba(255,107,107,0.12)">&#127919;</div><div class="agent-name">Recommendation Agent</div><div class="agent-desc">Translates insights into concrete, prioritized business strategies.</div><div><span class="pill">Strategy generation</span><span class="pill">Prioritization</span><span class="pill">Business logic</span></div></div>
+    <div class="agent-card agent-memory"><div class="agent-icon" style="background:rgba(167,139,250,0.12)">&#129504;</div><div class="agent-name">Memory Layer</div><div class="agent-desc">FAISS-backed vector store for past queries, results, and context recall.</div><div><span class="pill">FAISS</span><span class="pill">Query history</span><span class="pill">Semantic search</span></div></div>
+    <div class="agent-card agent-api"><div class="agent-icon" style="background:rgba(56,189,248,0.12)">&#128268;</div><div class="agent-name">Backend API</div><div class="agent-desc">FastAPI orchestration exposing /upload, /analyze, and /query endpoints.</div><div><span class="pill">FastAPI</span><span class="pill">Async</span><span class="pill">Orchestration</span></div></div>
+  </div>
+</div>
+
+<div id="tab-workflow" class="section content">
+  <div class="sec-label">03 &middot; System Workflow</div>
+  <div class="sec-title">End-to-End Data Flow</div>
+  <div class="sec-desc">From raw CSV upload to business recommendations.</div>
+  <div class="flow">
+    <div class="flow-step"><div class="flow-num" style="background:rgba(0,229,160,0.15);color:#00E5A0">01</div><div><div class="flow-title">Upload Dataset</div><div class="flow-sub">CSV with order_id, product, sales, region, customer_id</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(56,189,248,0.15);color:#38BDF8">02</div><div><div class="flow-title">Validate Data</div><div class="flow-sub">Schema check, type validation, null detection</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(108,99,255,0.15);color:#A78BFA">03</div><div><div class="flow-title">Planner Agent Activated</div><div class="flow-sub">Decomposes task into analysis steps</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-decision">Is Data Clean? &#8594; No &#8594; Auto-clean &#8594; Continue</div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(0,229,160,0.15);color:#00E5A0">04</div><div><div class="flow-title">Data Agent Executes</div><div class="flow-sub">Sales trends &middot; Region performance &middot; Product analysis</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(255,179,71,0.15);color:#FFB347">05</div><div><div class="flow-title">Insight Agent</div><div class="flow-sub">"Revenue dropped 18% due to low repeat customers"</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(255,107,107,0.15);color:#FF6B6B">06</div><div><div class="flow-title">Recommendation Agent</div><div class="flow-sub">"Offer loyalty discounts to returning customers"</div></div></div>
+    <div class="flow-arrow">&#8595;</div>
+    <div class="flow-step"><div class="flow-num" style="background:rgba(167,139,250,0.15);color:#A78BFA">07</div><div><div class="flow-title">Dashboard + Report Output</div><div class="flow-sub">Plotly charts &middot; Text insights &middot; API response</div></div></div>
+  </div>
+</div>
+
+<div id="tab-techstack" class="section content">
+  <div class="sec-label">04 &middot; Technology Stack</div>
+  <div class="sec-title">Production-Grade Tools</div>
+  <div class="sec-desc">Every layer chosen for scalability, performance, and enterprise readiness.</div>
+  <div class="card">
+    <div class="tech-row"><div class="tech-layer">AI / Agents</div><div><span class="tech-tag t-ai">LangGraph</span><span class="tech-tag t-ai">LangChain</span><span class="tech-tag t-ai">OpenAI / Claude</span></div></div>
+    <div class="tech-row"><div class="tech-layer">Backend</div><div><span class="tech-tag t-back">FastAPI</span><span class="tech-tag t-back">Python 3.11</span><span class="tech-tag t-back">Uvicorn</span></div></div>
+    <div class="tech-row"><div class="tech-layer">Data Processing</div><div><span class="tech-tag t-data">Pandas</span><span class="tech-tag t-data">NumPy</span><span class="tech-tag t-data">Scikit-learn</span></div></div>
+    <div class="tech-row"><div class="tech-layer">Visualization</div><div><span class="tech-tag t-viz">Plotly</span><span class="tech-tag t-viz">Dash</span></div></div>
+    <div class="tech-row"><div class="tech-layer">Storage</div><div><span class="tech-tag t-db">FAISS</span><span class="tech-tag t-db">Redis</span><span class="tech-tag t-db">PostgreSQL</span></div></div>
+    <div class="tech-row"><div class="tech-layer">Deployment</div><div><span class="tech-tag t-deploy">Docker</span><span class="tech-tag t-deploy">AWS / GCP</span><span class="tech-tag t-deploy">GitHub Actions</span></div></div>
+  </div>
+</div>
+
+<div id="tab-usecase" class="section content">
+  <div class="sec-label">05 &middot; Sample Use Case</div>
+  <div class="sec-title">Input &rarr; Output Example</div>
+  <div class="sec-desc">A complete walkthrough using a retail dataset with regional sales data.</div>
+  <div class="grid-2" style="margin-bottom:20px">
+    <div class="io-block">
+      <div class="io-label" style="color:#38BDF8">INPUT DATASET SCHEMA</div>
+      <div class="io-row"><span class="io-key">order_id</span><span class="io-val" style="color:#A78BFA">UUID &middot; Primary key</span></div>
+      <div class="io-row"><span class="io-key">product</span><span class="io-val" style="color:#00E5A0">String &middot; SKU name</span></div>
+      <div class="io-row"><span class="io-key">sales</span><span class="io-val" style="color:#FFB347">Float &middot; Revenue (USD)</span></div>
+      <div class="io-row"><span class="io-key">region</span><span class="io-val" style="color:#38BDF8">Enum &middot; N/S/E/W</span></div>
+      <div class="io-row"><span class="io-key">customer_id</span><span class="io-val" style="color:#FF6B6B">UUID &middot; Customer ref</span></div>
+      <div class="io-row"><span class="io-key">date</span><span class="io-val" style="color:#7A8499">Timestamp &middot; Order date</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="io-block">
+        <div class="io-label" style="color:#FFB347">INSIGHT GENERATED</div>
+        <div style="font-size:14px;line-height:1.7">Sales dropped <span style="color:#FF6B6B;font-weight:600">22%</span> in the North region due to reduced repeat customer activity and a 15% increase in cart abandonment.</div>
+      </div>
+      <div class="io-block">
+        <div class="io-label" style="color:#FF6B6B">RECOMMENDATION</div>
+        <div style="font-size:14px;line-height:1.7">Improve delivery SLA in North region. Launch re-engagement campaign with <span style="color:#00E5A0;font-weight:600">12% discount</span> for lapsed customers.</div>
+      </div>
+    </div>
+  </div>
+  <div class="io-block">
+    <div class="io-label" style="color:#6C63FF">CHART &mdash; REGION-WISE SALES PERFORMANCE</div>
+    <canvas id="demoChart" height="100"></canvas>
+  </div>
+</div>
+
+<div id="tab-features" class="section content">
+  <div class="sec-label">06 &middot; Advanced Features</div>
+  <div class="sec-title">FAANG-Level Capabilities</div>
+  <div class="sec-desc">Built for enterprise scale with production patterns.</div>
+  <div class="grid-2">
+    <div class="feat"><div class="feat-icon">&#129309;</div><div><div class="feat-title">Multi-Agent Collaboration</div><div class="feat-desc">Agents communicate via structured message passing using LangGraph state graphs. True agentic coordination.</div></div></div>
+    <div class="feat"><div class="feat-icon">&#128260;</div><div><div class="feat-title">Reflection Loop</div><div class="feat-desc">Each agent validates its own output before passing downstream. Bad results trigger automatic regeneration.</div></div></div>
+    <div class="feat"><div class="feat-icon">&#129504;</div><div><div class="feat-title">Persistent Memory System</div><div class="feat-desc">FAISS vector store maintains semantic search over past queries for context-aware analysis.</div></div></div>
+    <div class="feat"><div class="feat-icon">&#128172;</div><div><div class="feat-title">Natural Language Queries</div><div class="feat-desc">Ask "Show top products in Q3" or "Why did sales drop?" &mdash; system interprets intent and routes accordingly.</div></div></div>
+    <div class="feat"><div class="feat-icon">&#9889;</div><div><div class="feat-title">Async Processing</div><div class="feat-desc">FastAPI + async execution allows concurrent dataset processing for multiple users without blocking.</div></div></div>
+    <div class="feat"><div class="feat-icon">&#128202;</div><div><div class="feat-title">Interactive Visualizations</div><div class="feat-desc">Plotly charts with drill-down, region filtering, date range sliders, and export-to-PDF.</div></div></div>
+  </div>
+</div>
+
+<div id="tab-deployment" class="section content">
+  <div class="sec-label">07 &middot; Deployment</div>
+  <div class="sec-title">From Code to Cloud</div>
+  <div class="sec-desc">Full production deployment pipeline with CI/CD integration.</div>
+  <div class="grid-2">
+    <div>
+      <div class="deploy-step"><div class="deploy-num">1</div><div><div class="deploy-title">Build the API</div><div class="deploy-desc">FastAPI app with /upload, /analyze, /query. Include health checks and OpenAPI docs.</div></div></div>
+      <div class="deploy-step"><div class="deploy-num">2</div><div><div class="deploy-title">Dockerize</div><div class="deploy-desc">Multi-stage Dockerfile &mdash; builder stage for deps, runtime stage for minimal image size.</div></div></div>
+      <div class="deploy-step"><div class="deploy-num">3</div><div><div class="deploy-title">Deploy on Cloud</div><div class="deploy-desc">Push to AWS ECS or GCP Cloud Run. Attach managed Redis for memory, S3/GCS for datasets.</div></div></div>
+      <div class="deploy-step"><div class="deploy-num">4</div><div><div class="deploy-title">Expose Endpoint</div><div class="deploy-desc">API Gateway with auth, rate limiting, CORS. GitHub Actions for auto re-deploy on push.</div></div></div>
+    </div>
+    <div class="code-block">
+# Dockerfile
+FROM python:3.11-slim AS builder
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install --no-cache-dir \
+    -r requirements.txt
+
+FROM python:3.11-slim
+WORKDIR /app
+COPY --from=builder \
+    /usr/local/lib/python3.11 \
+    /usr/local/lib/python3.11
+COPY . .
+EXPOSE 8000
+CMD ["uvicorn", "api.app:app",
+     "--host", "0.0.0.0",
+     "--port", "8000"]</div>
+  </div>
+  <div class="tip-box">
+    <div style="font-size:18px">&#128163;</div>
+    <div class="tip-text"><strong>Final 10/10 checklist:</strong> Add a demo video &middot; Deploy live link (Railway/Render free tier) &middot; Clean GitHub README with badges &middot; Use a real Kaggle e-commerce dataset</div>
+  </div>
+</div>
+
+<div id="tab-structure" class="section content">
+  <div class="sec-label">08 &middot; Project Structure</div>
+  <div class="sec-title">File &amp; Module Layout</div>
+  <div class="sec-desc">Clean separation of concerns across agents, tools, API, and data layers.</div>
+  <div class="card">
+    <div class="struct-item" style="background:transparent;border-color:transparent;padding-left:0"><div>&#128193;</div><div><strong>ecommerce-agent-ai/</strong></div></div>
+    <div class="struct-item"><div>&#128193;</div><div><strong style="color:#E8ECF4">agents/</strong> <span style="color:#7A8499">&mdash; planner.py &middot; data_agent.py &middot; insight_agent.py &middot; recommendation_agent.py</span></div></div>
+    <div class="struct-item"><div>&#128193;</div><div><strong style="color:#E8ECF4">tools/</strong> <span style="color:#7A8499">&mdash; data_tools.py &middot; visualization_tools.py &middot; memory_tools.py</span></div></div>
+    <div class="struct-item"><div>&#128193;</div><div><strong style="color:#E8ECF4">api/</strong> <span style="color:#7A8499">&mdash; app.py &middot; routes.py &middot; schemas.py</span></div></div>
+    <div class="struct-item"><div>&#128193;</div><div><strong style="color:#E8ECF4">data/</strong> <span style="color:#7A8499">&mdash; sample_dataset.csv &middot; processed/ &middot; uploads/</span></div></div>
+    <div class="struct-item"><div>&#128193;</div><div><strong style="color:#E8ECF4">dashboard/</strong> <span style="color:#7A8499">&mdash; index.html (this file)</span></div></div>
+    <div class="struct-item"><div>&#128196;</div><div><strong style="color:#E8ECF4">Dockerfile</strong> <span style="color:#7A8499">&middot; docker-compose.yml &middot; .env.example</span></div></div>
+    <div class="struct-item"><div>&#128196;</div><div><strong style="color:#E8ECF4">requirements.txt</strong> <span style="color:#7A8499">&middot; README.md</span></div></div>
+  </div>
+</div>
+
+<div id="tab-interview" class="section content">
+  <div class="sec-label">09 &middot; Interview Preparation</div>
+  <div class="sec-title">Likely Interview Questions</div>
+  <div class="sec-desc">Master these answers before your technical round.</div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>What is agentic AI and how is it different from a simple LLM call?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">Agentic AI refers to systems where an LLM autonomously takes multi-step actions &mdash; calling tools, making decisions, looping on results &mdash; rather than producing a single response. Unlike a one-shot LLM call, an agent perceives state, plans a sequence, executes tools, and adapts based on outputs. In this project, the Planner Agent breaks a user query into steps, the Data Agent executes pandas operations, and the system iterates until a complete answer is assembled.</div></div></div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>How do your agents communicate with each other?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">Agents communicate via structured message passing using LangGraph's state graph. Each agent reads from a shared state dictionary and writes its outputs back. The Planner writes a task plan; the Data Agent reads it, executes analysis, and writes results; the Insight Agent reads those results to generate text. This avoids tight coupling &mdash; any agent can be swapped without changing the others.</div></div></div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>Why multi-agent instead of one large LLM prompt?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">Single large prompts hit context limits, are difficult to debug, and mix concerns. Multi-agent architectures enable specialization (each agent is an expert in one task), parallelism (agents can run concurrently), observability (you can log each agent's exact input/output), and modularity (swap or upgrade one agent independently).</div></div></div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>How did you handle data preprocessing challenges?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">The Data Agent runs a preprocessing pipeline: (1) schema validation on upload, (2) null imputation using median for numeric and mode for categorical, (3) IQR-based outlier detection with flagging rather than deletion, (4) date parsing with timezone normalization, (5) type casting and column renaming to a standard schema.</div></div></div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>How does your system scale to large datasets or many users?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">FastAPI uses async endpoints so I/O-bound operations don't block the event loop. For large datasets, the Data Agent uses chunked Pandas processing and can dispatch to Dask. Docker + cloud deployment enables horizontal scaling. Redis caches repeated analysis results. FAISS memory queries are O(log n) even at millions of vectors.</div></div></div>
+  <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span>What is the reflection loop and why does it matter?</span><span class="chevron">&#9660;</span></div><div class="qa-a"><div class="qa-a-inner">The reflection loop is a self-critique mechanism where an agent evaluates its own output before passing it downstream. The Insight Agent generates a finding, then runs a second prompt asking "Is this conclusion supported by the data?" If the critique fails, the agent regenerates &mdash; dramatically reducing hallucinated or unsupported insights.</div></div></div>
+</div>
+
+<script>
+function showTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id === 'usecase') setTimeout(renderChart, 100);
+}
+function toggleQA(el) {
+  const ans = el.nextElementSibling;
+  const isOpen = el.classList.contains('open');
+  document.querySelectorAll('.qa-q.open').forEach(q => { q.classList.remove('open'); q.nextElementSibling.classList.remove('open'); });
+  if(!isOpen) { el.classList.add('open'); ans.classList.add('open'); }
+}
+let chartInst = null;
+function renderChart() {
+  if(chartInst) return;
+  const ctx = document.getElementById('demoChart');
+  if(!ctx) return;
+  chartInst = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['North','South','East','West'],
+      datasets: [
+        { label: 'Q3 Sales ($K)', data: [78,142,115,98], backgroundColor: ['rgba(255,107,107,0.7)','rgba(0,229,160,0.7)','rgba(108,99,255,0.7)','rgba(255,179,71,0.7)'], borderColor: ['#FF6B6B','#00E5A0','#6C63FF','#FFB347'], borderWidth:1.5, borderRadius:6 },
+        { label: 'Q4 Sales ($K)', data: [61,155,108,112], backgroundColor: ['rgba(255,107,107,0.3)','rgba(0,229,160,0.3)','rgba(108,99,255,0.3)','rgba(255,179,71,0.3)'], borderColor: ['#FF6B6B','#00E5A0','#6C63FF','#FFB347'], borderWidth:1.5, borderRadius:6 }
+      ]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { labels: { color: '#7A8499', font: { size: 12 } } } },
+      scales: {
+        x: { ticks: { color: '#7A8499' }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#7A8499' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
