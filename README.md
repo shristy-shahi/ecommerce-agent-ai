@@ -12,7 +12,7 @@
 
 ## 🎯 What It Does
 
-| Feature | Description |
+| Feature | Description | 
 |---|---|
 | 📊 Autonomous EDA | Data Agent performs full exploratory analysis on upload |
 | 🗺️ Task Planning | Planner Agent decomposes queries into execution steps |
